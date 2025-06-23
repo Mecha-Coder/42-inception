@@ -16,7 +16,7 @@ DOMAIN           = ${USER}.42.fr
 #=======================================================
 
 convert:
-	@echo "$(NOTE)=== Convert script(CRLF) to Unix(LF)$(DONE)==="
+	@echo "$(NOTE)=== Convert script(CRLF) to Unix(LF)===$(DONE)"
 	@find . -type f \( -name '*.sh' \) -exec sed -i 's/\r$$//' {} +
 
 setup:
@@ -25,9 +25,10 @@ setup:
 	@sudo mkdir -p $(MARIADB_VOLUME)
 	@sudo chmod 777 $(WORDPRESS_VOLUME)
 	@sudo chmod 777 $(MARIADB_VOLUME)
-	@echo "=== Setting up hosts file ==="
+	@echo "$(NOTE)=== Setting up hosts file ===$(DONE)"
 	@if ! grep -q "$(DOMAIN)" /etc/hosts; then \
 		echo "127.0.0.1 $(DOMAIN)" | sudo tee -a /etc/hosts; \
+	fi
 
 run:
 	@echo "$(NOTE)=== Run Docker ===$(DONE)"
