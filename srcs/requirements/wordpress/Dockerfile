@@ -26,6 +26,8 @@ ln -s /usr/bin/php81 /usr/bin/php
 COPY conf/www.conf /etc/php81/php-fpm.d/www.conf
 COPY tools/wordpress-entrypoint.sh /usr/local/bin/
 
+RUN chmod +x /usr/local/bin/wordpress-entrypoint.sh
+
 WORKDIR /var/www/html
 
 EXPOSE 9000
