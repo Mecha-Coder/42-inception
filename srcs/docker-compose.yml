@@ -17,7 +17,7 @@ services:
         image         : wordpress42_img
         build         : requirements/wordpress
         restart       : always
-        volume:
+        volumes:
         - ${VOLUME_PATH}/wordpress:/var/www/html 
         networks:
         - inception_network
@@ -33,11 +33,11 @@ services:
         restart       : always
         ports:
         - 443:443
-        volume:
+        volumes:
         - ${VOLUME_PATH}/wordpress:/var/www/html
         networks:
         - inception_network
-        depands_on:
+        depends_on:
         - wordpress
         
 networks:

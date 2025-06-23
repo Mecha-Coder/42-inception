@@ -12,7 +12,7 @@ MARIADB_VOLUME   = $(VOLUME_PATH)/mariadb
 DOMAIN           = ${USER}.42.fr
 
 #=======================================================
-# COMAND
+# COMMAND
 #=======================================================
 
 convert:
@@ -32,29 +32,29 @@ setup:
 
 run:
 	@echo "$(NOTE)=== Run Docker ===$(DONE)"
-	docker compose -f srcs/docker-compose.yml build --no-cache
-	docker compose -f srcs/docker-compose.yml up
+	@sudo docker compose -f srcs/docker-compose.yml build --no-cache
+	@sudo docker compose -f srcs/docker-compose.yml up
 
 clean:
 	@echo "$(NOTE)=== Cleaning up Docker resources ===$(DONE)"
-	@if [ -n "$$(docker ps -aq)" ]; then docker stop $$(docker ps -aq); fi
-	@if [ -n "$$(docker ps -aq)" ]; then docker rm -f $$(docker ps -aq); fi
-	@if [ -n "$$(docker images -q)" ]; then docker rmi -f $$(docker images -q); fi
-	@if [ -n "$$(docker volume ls -q)" ]; then docker volume rm -f $$(docker volume ls -q); fi
-	@if [ -n "$$(docker network ls -q | grep -v 'bridge\|host\|none')" ]; then \
-		docker network rm $$(docker network ls -q | grep -v 'bridge\|host\|none'); \
+	@if [ -n "$$(sudo docker ps -aq)" ]; then sudo docker stop $$(sudo docker ps -aq); fi
+	@if [ -n "$$(sudo docker ps -aq)" ]; then sudo docker rm -f $$(sudo docker ps -aq); fi
+	@if [ -n "$$(sudo docker images -q)" ]; then sudo docker rmi -f $$(sudo docker images -q); fi
+	@if [ -n "$$(sudo docker volume ls -q)" ]; then sudo docker volume rm -f $$(sudo docker volume ls -q); fi
+	@if [ -n "$$(sudo docker network ls -q | grep -v 'bridge\|host\|none')" ]; then \
+		sudo docker network rm $$(sudo docker network ls -q | grep -v 'bridge\|host\|none'); \
 	fi
 
 re: clean run
 
 status:
 	@echo "$(NOTE)=== Container Status ===$(DONE)"
-	@docker ps
+	@sudo docker ps
 	@echo "\n$(NOTE)=== Docker Images ===$(DONE)"
-	@docker images
+	@sudo docker images
 	@echo "\n$(NOTE)=== Docker Volumes ===$(DONE)"
-	@docker volume ls
+	@sudo docker volume ls
 	@echo "\n$(NOTE)=== Docker Networks ===$(DONE)"
-	@docker network ls
+	@sudo docker network ls
 
-.PHONY: run clean re status
+.PHONY: run clean re status convert setup
