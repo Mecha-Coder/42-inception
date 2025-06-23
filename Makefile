@@ -1,3 +1,6 @@
+NOTE = \033[1;33m
+DONE = \033[0m
+
 #======================================================
 # VARIABLE
 #======================================================
@@ -13,10 +16,11 @@ DOMAIN           = ${USER}.42.fr
 #=======================================================
 
 convert:
+	@echo "$(NOTE)=== Convert script(CRLF) to Unix(LF)$(DONE)==="
 	@find . -type f \( -name '*.sh' \) -exec sed -i 's/\r$$//' {} +
 
 setup:
-	@echo "=== Creating data directories ==="
+	@echo "$(NOTE)=== Creating data directories ===$(DONE)"
 	@sudo mkdir -p $(WORDPRESS_VOLUME)
 	@sudo mkdir -p $(MARIADB_VOLUME)
 	@sudo chmod 777 $(WORDPRESS_VOLUME)
@@ -26,12 +30,12 @@ setup:
 		echo "127.0.0.1 $(DOMAIN)" | sudo tee -a /etc/hosts; \
 
 run:
-	@echo "=== Run Docker ==="
+	@echo "$(NOTE)=== Run Docker ===$(DONE)"
 	docker compose -f srcs/docker-compose.yml build --no-cache
 	docker compose -f srcs/docker-compose.yml up
 
 clean:
-	@echo "=== Cleaning up Docker resources ==="
+	@echo "$(NOTE)=== Cleaning up Docker resources ===$(DONE)"
 	@if [ -n "$$(docker ps -aq)" ]; then docker stop $$(docker ps -aq); fi
 	@if [ -n "$$(docker ps -aq)" ]; then docker rm -f $$(docker ps -aq); fi
 	@if [ -n "$$(docker images -q)" ]; then docker rmi -f $$(docker images -q); fi
@@ -43,13 +47,13 @@ clean:
 re: clean run
 
 status:
-	@echo "=== Container Status ==="
+	@echo "$(NOTE)=== Container Status ===$(DONE)"
 	@docker ps
-	@echo "\n=== Docker Images ==="
+	@echo "\n$(NOTE)=== Docker Images ===$(DONE)"
 	@docker images
-	@echo "\n=== Docker Volumes ==="
+	@echo "\n$(NOTE)=== Docker Volumes ===$(DONE)"
 	@docker volume ls
-	@echo "\n=== Docker Networks ==="
+	@echo "\n$(NOTE)=== Docker Networks ===$(DONE)"
 	@docker network ls
 
 .PHONY: run clean re status
