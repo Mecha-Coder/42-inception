@@ -13,6 +13,11 @@ services:
         - inception_network
         env_file:
         - .env
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p$$MYSQL_ROOT_PASSWORD"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
     
     wordpress:
         container_name: wordpress_incpetion
@@ -26,7 +31,8 @@ services:
         env_file:
         - .env
         depends_on:
-        - mariadb
+            mariadb:
+                condition: service_healthy
     
     nginx:
         container_name: nginx_incpetion
