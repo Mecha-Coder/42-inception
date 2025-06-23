@@ -1,54 +1,64 @@
 services:
+  mariadb:
+    image: "mariadb:inception"
+    build:
+      context: requirements/mariadb
+      dockerfile: Dockerfile
+    container_name: mariadb
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    networks:
+      - inception_network
+    env_file:
+      - .env
+    restart: always
 
-    mariadb:
-        container_name: mariadb_incpetion
-        image         : mariadb42_img
-        build         : requirements/mariadb
-        restart       : always
-        volumes:
-        - ${VOLUME_PATH}/mariadb:/var/lib/mysql
-        networks:
-        - inception_network
-        env_file:
-        - .env
-        healthcheck:
-            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p$$MYSQL_ROOT_PASSWORD"]
-            interval: 10s
-            timeout: 5s
-            retries: 5
-    
-    wordpress:
-        container_name: wordpress_incpetion
-        image         : wordpress42_img
-        build         : requirements/wordpress
-        restart       : always
-        volumes:
-        - ${VOLUME_PATH}/wordpress:/var/www/html 
-        networks:
-        - inception_network
-        env_file:
-        - .env
-        depends_on:
-            mariadb:
-                condition: service_healthy
-    
-    nginx:
-        container_name: nginx_incpetion
-        image         : nginx42_img
-        build         : requirements/nginx
-        restart       : always
-        ports:
-        - 443:443
-        volumes:
-        - ${VOLUME_PATH}/wordpress:/var/www/html
-        networks:
-        - inception_network
-        depends_on:
-        - wordpress
-        
+  wordpress:
+    image: "wordpress:inception"
+    build:
+      context: requirements/wordpress
+      dockerfile: Dockerfile
+    container_name: wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception_network
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
+    restart: always
+
+  nginx:
+    image: "nginx:inception"
+    build:
+      context: requirements/nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - "443:443"
+    volumes:
+      - wordpress_data:/var/www/html
+    networks:
+      - inception_network
+    depends_on:
+      - wordpress
+    restart: always
+
 networks:
   inception_network:
+    driver: bridge
 
-
-        
-
+volumes:
+  wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${VOLUME_PATH}/wordpress
+  mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${VOLUME_PATH}/mariadb

@@ -1,4 +1,4 @@
-
+# WordPress Dockerfile
 FROM alpine:3.19
 
 RUN apk update && apk add --no-cache \
@@ -18,10 +18,10 @@ RUN apk update && apk add --no-cache \
     bash
 
 RUN mkdir -p /var/www/html && \
-wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-chmod +x wp-cli.phar && \
-mv wp-cli.phar /usr/local/bin/wp && \
-ln -s /usr/bin/php81 /usr/bin/php
+    wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
+    chmod +x wp-cli.phar && \
+    mv wp-cli.phar /usr/local/bin/wp && \
+    ln -s /usr/bin/php81 /usr/bin/php
 
 COPY conf/www.conf /etc/php81/php-fpm.d/www.conf
 COPY tools/wordpress-entrypoint.sh /usr/local/bin/
