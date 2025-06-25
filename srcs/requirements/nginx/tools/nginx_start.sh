@@ -1,9 +1,13 @@
 #!/bin/bash
 
 if [ ! -f /etc/ssl/certs/nginx.crt ]; then
-echo "Nginx: setting up ssl ...";
-openssl req -x509 -nodes -days 365 -newkey rsa:4096 -keyout /etc/ssl/private/nginx.key -out /etc/ssl/certs/nginx.crt -subj "/C=MY/ST=Selangor/L=Kuala_Lumpur/O=24KL/CN=jpaul.42.fr";
-echo "Nginx: ssl is set up!";
+  echo "Nginx: setting up ssl ...";
+  openssl req -x509 -nodes -days 365 -newkey rsa:4096 \
+    -keyout /etc/ssl/private/nginx.key \
+    -out /etc/ssl/certs/nginx.crt \
+    -subj "${SUB_SSL}";
+  echo "Nginx: ssl is set up!";
 fi
 
+echo "Nginx is running 👍"
 exec "$@"

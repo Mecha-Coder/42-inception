@@ -21,4 +21,5 @@ if [ ! -f /var/www/html/wp-config.php ]; then
 	echo "Wordpress: set up!"
 fi
 
+echo "Wordpress is running 👍"
 exec "$@"
