@@ -15,7 +15,7 @@ DOMAIN           = ${USER}.42.fr
 # COMMAND
 #=======================================================
 
-.PHONY: setup convert host folder group run clean fclean status    
+.PHONY: setup convert host folder group build run stop clean fclean status    
 
 # SETUP FOR FRESH VM
 #---------------------
@@ -58,11 +58,16 @@ group:
 # COMMANDS FOR EVAL
 #-------------------
 
-run:
-	@echo "$(NOTE)Run Docker$(DONE)"
-	@echo "$(NOTE)==========$(DONE)"
+build:
+	@echo "$(NOTE)Build Container$(DONE)"
+	@echo "$(NOTE)===============$(DONE)"
 	docker compose -f ./srcs/docker-compose.yml build --no-cache
+
+run:
 	docker compose -f ./srcs/docker-compose.yml up
+
+stop:
+	docker compose -f ./srcs/docker-compose.yml down
 
 clean:
 	@echo "$(NOTE)Wipe docker$(DONE)"
