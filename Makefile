@@ -55,7 +55,7 @@ group:
 		fi; \
 	}
 
-# COMMAND FOR EVAL
+# COMMANDS FOR EVAL
 #-------------------
 
 run:
