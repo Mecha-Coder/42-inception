@@ -1,17 +1,15 @@
-FROM alpine:3.19
+FROM debian:buster
 
-RUN apk update && apk add --no-cache \
-    nginx \
-    openssl
-
-RUN mkdir -p /etc/nginx/ssl && \
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-    -keyout /etc/nginx/ssl/nginx.key \
-    -out /etc/nginx/ssl/nginx.crt \
-    -subj "/CN=${DOMAIN_NAME:-localhost}"
-
-COPY conf/nginx.conf /etc/nginx/nginx.conf
+RUN apt-get update
+RUN apt-get install -y nginx openssl
 
 EXPOSE 443
+
+COPY ./conf/default /etc/nginx/sites-enabled/default
+COPY ./tools/nginx_start.sh /var/www
+
+RUN chmod +x /var/www/nginx_start.sh
+
+ENTRYPOINT [ "var/www/nginx_start.sh" ]
 
 CMD ["nginx", "-g", "daemon off;"]

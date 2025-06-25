@@ -15,46 +15,76 @@ DOMAIN           = ${USER}.42.fr
 # COMMAND
 #=======================================================
 
-convert:
-	@echo "$(NOTE)=== Convert script(CRLF) to Unix(LF)===$(DONE)"
-	@find . -type f \( -name '*.sh' \) -exec sed -i 's/\r$$//' {} +
+.PHONY: setup convert host folder group run clean fclean status    
 
-setup:
-	@echo "$(NOTE)=== Creating data directories ===$(DONE)"
-	@sudo mkdir -p $(WORDPRESS_VOLUME)
-	@sudo mkdir -p $(MARIADB_VOLUME)
-	@sudo chmod 777 $(WORDPRESS_VOLUME)
-	@sudo chmod 777 $(MARIADB_VOLUME)
-	@echo "$(NOTE)=== Setting up hosts file ===$(DONE)"
+# SETUP FOR FRESH VM
+#---------------------
+
+setup: setup_message convert host folder group
+
+setup_message:
+	@echo "$(NOTE)Setup for brand new VM$(DONE)"
+	@echo "$(NOTE)======================$(DONE)"
+
+convert:
+	@echo "$(NOTE)=> Convert script(CRLF) to Unix(LF)$(DONE)"
+	find . -type f -name '*.sh' -exec dos2unix {} \;
+
+host:
+	@echo "$(NOTE)=> Add $(DOMAIN) to /etc/host$(DONE)"
 	@if ! grep -q "$(DOMAIN)" /etc/hosts; then \
-		echo "127.0.0.1 $(DOMAIN)" | sudo tee -a /etc/hosts; \
+		echo "127.0.0.1 $(DOMAIN)" |  tee -a /etc/hosts; \
 	fi
+
+folder:
+	@echo "$(NOTE)=> Creating data-folder for mounting$(DONE)"
+	sudo mkdir -p $(WORDPRESS_VOLUME)
+	sudo mkdir -p $(MARIADB_VOLUME)
+	sudo chmod 777 $(WORDPRESS_VOLUME)
+	sudo chmod 777 $(MARIADB_VOLUME)
+
+group:
+	@echo "$(NOTE)=> Upgrade docker privilege$(DONE)"
+	@{ \
+		getent group docker >/dev/null || sudo groupadd docker; \
+		if ! id -nG "$$USER" | grep -qw docker; then \
+			sudo usermod -aG $$USER; \
+			echo "Upgraded docker privilege"; \
+		else \
+			echo "Docker is already in group"; \
+		fi; \
+	}
+
+# COMMAND FOR EVAL
+#-------------------
 
 run:
-	@echo "$(NOTE)=== Run Docker ===$(DONE)"
-	@sudo docker compose -f srcs/docker-compose.yml build --no-cache
-	@sudo docker compose -f srcs/docker-compose.yml up
+	@echo "$(NOTE)Run Docker$(DONE)"
+	@echo "$(NOTE)==========$(DONE)"
+	docker compose -f ./srcs/docker-compose.yml build --no-cache
+	docker compose -f ./srcs/docker-compose.yml up
 
 clean:
-	@echo "$(NOTE)=== Cleaning up Docker resources ===$(DONE)"
-	@if [ -n "$$(sudo docker ps -aq)" ]; then sudo docker stop $$(sudo docker ps -aq); fi
-	@if [ -n "$$(sudo docker ps -aq)" ]; then sudo docker rm -f $$(sudo docker ps -aq); fi
-	@if [ -n "$$(sudo docker images -q)" ]; then sudo docker rmi -f $$(sudo docker images -q); fi
-	@if [ -n "$$(sudo docker volume ls -q)" ]; then sudo docker volume rm -f $$(sudo docker volume ls -q); fi
-	@if [ -n "$$(sudo docker network ls -q | grep -v 'bridge\|host\|none')" ]; then \
-		sudo docker network rm $$(sudo docker network ls -q | grep -v 'bridge\|host\|none'); \
-	fi
+	@echo "$(NOTE)Wipe docker$(DONE)"
+	@echo "$(NOTE)===========$(DONE)"
+	@docker ps -qa | xargs -r docker stop || true; \
+	docker ps -qa | xargs -r docker rm || true; \
+	docker images -qa | xargs -r docker rmi -f || true; \
+	docker volume ls -q | xargs -r docker volume rm || true; \
+	docker network ls -q | grep -v 'bridge\|host\|none' | xargs -r docker network rm || true
 
-re: clean run
+fclean: clean
+	@echo "$(NOTE)Delete data-folder$(DONE)"
+	@echo "$(NOTE)==================$(DONE)"
+	sudo rm -rf "$(WORDPRESS_VOLUME)" "$(MARIADB_VOLUME)"
 
 status:
 	@echo "$(NOTE)=== Container Status ===$(DONE)"
-	@sudo docker ps
+	@ docker ps
 	@echo "\n$(NOTE)=== Docker Images ===$(DONE)"
-	@sudo docker images
+	@ docker images
 	@echo "\n$(NOTE)=== Docker Volumes ===$(DONE)"
-	@sudo docker volume ls
+	@ docker volume ls
 	@echo "\n$(NOTE)=== Docker Networks ===$(DONE)"
-	@sudo docker network ls
+	@ docker network ls
 
-.PHONY: run clean re status convert setup

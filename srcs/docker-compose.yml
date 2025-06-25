@@ -1,64 +1,58 @@
+networks:
+  app-network:
+    name: app-network
+    driver: bridge
+
+volumes:
+  wp:
+    driver: local
+    name: wp
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/jpaul/data/wordpress
+  db:
+    driver: local
+    name: db
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/jpaul/data/mariadb
+
 services:
   mariadb:
-    image: "mariadb:inception"
-    build:
-      context: requirements/mariadb
-      dockerfile: Dockerfile
     container_name: mariadb
-    volumes:
-      - mariadb_data:/var/lib/mysql
-    networks:
-      - inception_network
+    build: ./requirements/mariadb
     env_file:
       - .env
-    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - app-network
+    restart: unless-stopped
 
   wordpress:
-    image: "wordpress:inception"
-    build:
-      context: requirements/wordpress
-      dockerfile: Dockerfile
     container_name: wordpress
-    volumes:
-      - wordpress_data:/var/www/html
-    networks:
-      - inception_network
+    build: ./requirements/wordpress
     env_file:
       - .env
     depends_on:
       - mariadb
-    restart: always
+    volumes:
+      - wp:/var/www/html
+    networks:
+      - app-network
+    restart: unless-stopped
 
   nginx:
-    image: "nginx:inception"
-    build:
-      context: requirements/nginx
-      dockerfile: Dockerfile
     container_name: nginx
+    build: ./requirements/nginx
     ports:
       - "443:443"
-    volumes:
-      - wordpress_data:/var/www/html
-    networks:
-      - inception_network
     depends_on:
       - wordpress
-    restart: always
-
-networks:
-  inception_network:
-    driver: bridge
-
-volumes:
-  wordpress_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${VOLUME_PATH}/wordpress
-  mariadb_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ${VOLUME_PATH}/mariadb
+    volumes:
+      - wp:/var/www/html
+    networks:
+      - app-network
+    restart: unless-stopped
