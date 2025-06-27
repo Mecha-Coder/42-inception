@@ -1,15 +1,35 @@
-FROM debian:buster
+FROM debian:bullseye
 
-RUN apt-get update
-RUN apt-get -y install php7.3 php-mysqli php-fpm wget sendmail
+RUN apt-get update && apt upgrade -y
+RUN apt-get -y install \
+	php7.4 \
+	php-mysql \
+	php-fpm \
+  php-curl \
+  php-xml \
+  php-mbstring \
+  php-json \
+	wget \
+  sendmail
 
 EXPOSE 9000
 
-COPY ./conf/www.conf /etc/php/7.3/fpm/pool.d
-COPY ./tools /var/www/
+RUN mkdir -p /run/php/
+RUN mkdir -p /var/www/html
 
-RUN chmod +x /var/www/wordpress_start.sh
+RUN wget https://wordpress.org/wordpress-6.0.tar.gz -P /var/www/html && \
+    cd /var/www/html && \
+    tar -xzf wordpress-6.0.tar.gz && \
+    mv wordpress/* . && \
+    rm -rf wordpress-6.0.tar.gz wordpress
 
-ENTRYPOINT [ "/var/www/wordpress_start.sh" ]
+RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+  && chmod +x wp-cli.phar \
+  && mv wp-cli.phar /usr/local/bin/wp
 
-CMD ["/usr/sbin/php-fpm7.3", "--nodaemonize"]
+COPY ./conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
+COPY ./tools/wordpress.sh ./wordpress.sh
+
+RUN chmod +x wordpress.sh
+
+CMD [ "./wordpress.sh" ]

@@ -12,7 +12,7 @@ volumes:
         driver_opts:
             type: none
             o: bind
-            device: /home/jpaul/data/wordpress
+            device: ${VOLUME_PATH}/wordpress
   
     db:
         driver: local
@@ -20,14 +20,14 @@ volumes:
         driver_opts:
             type: none
             o: bind
-            device: /home/jpaul/data/mariadb
+            device: ${VOLUME_PATH}/mariadb
 
 #==============================================
 
 services:
     
     mariadb:
-        restart: always
+        restart: on-failure
         container_name: mariadb
         build: ./requirements/mariadb
         image: mariadb:inception
@@ -40,7 +40,7 @@ services:
         
 
     wordpress:
-        restart: always
+        restart: on-failure
         container_name: wordpress
         build: ./requirements/wordpress
         image: wordpress:inception
@@ -54,7 +54,7 @@ services:
             - docker-network
 
     nginx:
-        restart: always
+        restart: on-failure
         container_name: nginx
         build: ./requirements/nginx
         image: nginx:inception

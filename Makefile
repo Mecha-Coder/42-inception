@@ -15,7 +15,7 @@ DOMAIN           = ${USER}.42.fr
 # COMMAND
 #=======================================================
 
-.PHONY: setup convert host folder group build run stop clean fclean status    
+.PHONY: setup convert host folder group build run stop clean fclean status re    
 
 # SETUP FOR FRESH VM
 #---------------------
@@ -26,6 +26,7 @@ setup_message:
 	@echo "$(NOTE)Setup for brand new VM$(DONE)"
 	@echo "$(NOTE)======================$(DONE)"
 
+# Only applicable if using VM in Windows
 convert:
 	@echo "$(NOTE)=> Convert script(CRLF) to Unix(LF)$(DONE)"
 	find . -type f -name '*.sh' -exec dos2unix {} \;
@@ -57,6 +58,8 @@ group:
 
 # COMMANDS FOR EVAL
 #-------------------
+
+re: clean build run
 
 build:
 	@echo "$(NOTE)Build Container$(DONE)"
