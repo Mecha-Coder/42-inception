@@ -20,7 +20,7 @@ DOMAIN        = ${USER}.42.fr
 	setup revol re hard
 
 setup: convert host volume group
-revol: volume c_volume
+revol: c_volume volume
 re   : clean build run
 hard: revol re
 
