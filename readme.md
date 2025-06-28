@@ -8,10 +8,10 @@
 
 ## 📢 Commands
 
-### 1. `make setup`  > 🔧 **Set up a fresh VM environment**
-### 2. `make revol`  > 💣 **Recreate volume on the host machine (⚠️ Data will be lost)**
-### 3. `make re`     > 🔁 **Rebuild and restart Docker containers**
-### 4. `make hard`   > 🔨 **Full reset: Wipe volumes & images, then rebuild and run**
-### 5. `make stop`   > ⛔ **Stop running containers**
-### 6. `make run`    > ▶️  **Start previously stopped containers**
-### 7. `make status` > 📊 **Check the status of containers, volumes, images & netword**
+1. `make setup`  > 🔧 *Set up for fresh VM*
+2. `make revol`  > 💣 *Recreate volume (⚠️ Data will be lost)*
+3. `make re`     > 🔁 *Rebuild and run Docker containers*
+4. `make hard`   > 🔨 *Full reset: Wipe volumes & images, then rebuild and run*
+5. `make stop`   > ⛔ *Stop running containers*
+6. `make run`    > ▶️ *Start previously stopped containers*
+7. `make status` > 📊 *Check the status of containers, volumes, images & netword*
