@@ -17,12 +17,12 @@ DOMAIN        = ${USER}.42.fr
 .PHONY: 
 	convert host volume c_volume group 
 	build run stop clean status
-	setup revol re reset 
+	setup revol re hard
 
 setup: convert host volume group
 revol: volume c_volume
 re   : clean build run
-reset: revol re
+hard: revol re
 
 # SETUP VM
 #-------------------------------------------------------------
