@@ -19,7 +19,7 @@ This project uses Docker and Docker Compose to run a full web service stack
 
 ### **About**
 
-👉 [**Project requirement**](\demo\en.subject.pdf)
+👉 [**Project requirement**](https://github.com/Mecha-Coder/42-inception/blob/main/demo/en.subject.pdf)
 
 This project uses docker and docker compose to to run a isolated container of:
 - NGINX
@@ -28,6 +28,7 @@ This project uses docker and docker compose to to run a isolated container of:
 
 They are all connected through a shared Docker network.
 
+![figure1](https://github.com/Mecha-Coder/42-inception/blob/main/demo/figure1.png)
 
 ---
 
